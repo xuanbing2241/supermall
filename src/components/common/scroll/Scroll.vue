@@ -35,6 +35,7 @@
         probeType: this.probeType,
         pullUpLoad: this.pullUpLoad,
         momentum: true,
+        useTransition: false,
       })
 
       // 发送滚动监听事件到父组件
