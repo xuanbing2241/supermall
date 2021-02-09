@@ -26,6 +26,7 @@ import RecommendView from "@/views/home/childComps/RecommendView";
 import FeatureView from "@/views/home/childComps/FeatureView";
 
 import {getHomeMultidata, getHomeGoods} from 'network/home';
+import {debounce} from "@/common/utils";
 
 export default {
   name: "Home",
@@ -45,6 +46,7 @@ export default {
       recommends: [],
       currentType: 'pop',
       isShowTop: false,
+      scrollY: 0,
       goods: {
         'pop' : {
           page: 0,
@@ -76,6 +78,23 @@ export default {
     this.getHomeGoods('pop');
     this.getHomeGoods('new');
     this.getHomeGoods('sell');
+
+  },
+  mounted() {
+
+    // 防抖函数包装
+    const refresh = debounce(this.$refs.scroll.refresh, 50);
+
+    this.$bus.$on('itemLoad', () => {
+      refresh();
+    })
+  },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.scrollY, 0);
+    this.$refs.scroll.refresh();
+  },
+  deactivated() {
+    this.scrollY = this.$refs.scroll.getScrollY();
   },
   methods: {
 
@@ -85,7 +104,8 @@ export default {
       this.getHomeGoods(this.currentType);
 
       // 刷新
-      this.$refs.scroll.scroll.refresh();
+      this.$refs.scroll.refresh();
+
     },
 
     // 滚动监听
